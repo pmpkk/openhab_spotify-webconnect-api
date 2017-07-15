@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OpenHab - Spotify Integration</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+	<link href="/static/matrix-theme/matrix-theme.css" rel="stylesheet" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<script>
+
+	$( document ).ready(function() {
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}		
+
+		$.get( "/rest/items/spotify_client_id/state", function( data ) {
+
+			if (data.length>10) {
+	  			$( "#client_id" ).html( data );
+
+	  			url = 'https://accounts.spotify.com/authorize?response_type=code&redirect_uri=' + encodeURI(document.location.href) + '&client_id=' + data + '&scope=user-read-playback-state user-modify-playback-state';
+
+	  			$( "#link" ).attr('href',url);				
+			} else {
+	  			$( "#status" ).html( 'spotify_client_id missing' );
+			}
+
+		});
+
+		var code = getParameterByName('code',document.location.href);
+
+		if (code.length>0) {
+
+			$( "#auth_code" ).html( code.substring(1,30) + '...' );
+
+			$.ajax({
+			    url: '/rest/items/spotify_auth_code/state',
+			    method: 'PUT',
+			    contentType: 'text/plain',
+			    data: code,
+				statusCode: {
+					202: function() {
+			  			$( "#status" ).html( 'New Auth Code successfully saved to OpenHab!' );
+					}
+				}   
+			});
+
+		}
+
+
+	});
+
+</script>
+<style>
+.widget {
+	width: 100% !important;
+}
+</style>
+<body style="padding-right: 40px;">
+<div style="width: 450px;margin-left:auto;margin-right: auto;">
+<div class="section">
+
+	<div class="sectionIconContainer"><div class="sectionIcon"><svg viewBox="0 0 48 48"><use xlink:href="/static/public-icons.svg#none"></use></svg></div></div>
+	<div class="title">Spotify Integration</div>
+	<div class="controls">
+
+		<div class="widget">
+			<div class="icon off"><svg viewBox="0 0 48 48"><use xlink:href="/static/matrix-theme/public-icons.svg#none"></use></svg></div>
+			<div class="name"></div>
+			<div class="appLogo"><svg viewBox="0 0 440 100"><use xlink:href="/static/matrix-theme/AppIcons.svg#spotify"></use></svg></div>        
+		</div>
+
+		<div class="widget wide">
+			<div class="icon off"><svg viewBox="0 0 48 48"><use xlink:href="/static/matrix-theme/public-icons.svg#none"></use></svg></div>
+			<div class="name">Client ID</div>
+			<div class="valueGroup">
+				<div class="value"><span id="client_id">n/a</span></div>
+				<div class="value">spotify_client_id</div>
+			</div>			
+		</div>
+
+		<div class="widget wide">
+			<div class="icon off"><svg viewBox="0 0 48 48"><use xlink:href="/static/matrix-theme/public-icons.svg#none"></use></svg></div>
+			<div class="name">Auth Code</div>
+			<div class="valueGroup">
+				<div class="value"><span id="auth_code">not yet received</span></div>
+				<div class="value">spotify_auth_code</div>
+			</div>			
+		</div>
+
+		<div class="widget wide">
+			<div class="icon off"><svg viewBox="0 0 48 48"><use xlink:href="/static/matrix-theme/public-icons.svg#none"></use></svg></div>
+			<div class="name">Status</div>
+			<div class="valueGroup"><div class="value"><span id="status"><a id="link" href="#">Click to Authenticate</a></span></div></div>			
+		</div>
+
+	</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+
+/* Switch to Force Update */
+Switch spotify_forceupadte
+
+/* Strings for Primary Auth */
+String spotify_auth_code
+String spotify_client_id
+String spotify_client_secret
+
+/* Strings for Token Auth */
+String spotify_access_token "AccessToken [%s]"
+String spotify_refresh_token "RefreshToken [%s]"
+String spotify_token_expiry "TokenExpiry [%s]"
+DateTime spotify_token_issued "TokenIssued [%s]"
+
+/* Strings to store Player Data */
+String spotify_current_track
+String spotify_current_artist
+String spotify_current_cover
+String spotify_current_duration
+String spotify_current_progress
+Switch spotify_current_playing
+String spotify_current_device
+String spotify_current_device_id
+Number spotify_current_volume
+
+/* Switches for Player actions */
+Switch spotify_play
+Switch spotify_pause
+Switch spotify_volume_up
+Switch spotify_volume_down
+Switch spotify_previous
+Switch spotify_next
+
+DateTime spotify_lastConnectionDateTime 

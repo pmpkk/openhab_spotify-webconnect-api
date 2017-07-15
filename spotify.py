@@ -61,7 +61,7 @@ class spotify(object):
 
             if (self.debug): print r.headers
             if (self.debug): print r.json()
-            if (self.debug): resp = r.json()
+            resp = r.json()
 
             if(r.status_code == 200):
                 access_token = resp['access_token']

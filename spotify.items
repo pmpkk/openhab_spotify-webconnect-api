@@ -25,11 +25,6 @@ String spotify_current_device_id
 Number spotify_current_volume
 
 /* Switches for Player actions */
-Switch spotify_play
-Switch spotify_pause
-Switch spotify_volume_up
-Switch spotify_volume_down
-Switch spotify_previous
-Switch spotify_next
+String spotify_action
 
 DateTime spotify_lastConnectionDateTime 

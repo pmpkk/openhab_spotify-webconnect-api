@@ -40,8 +40,8 @@ A simple Python script to integrate Spotify's Web Connect API (https://developer
 
 5. Give the client id and secret to OpenHab
 
-* Save the Client ID to spotify_client_id in OpenHab
-* Copy the Client Secret to spotify_client_secret in OpenHab
+* Save the Client ID to spotify_client_id in OpenHab (e.g. through openhab CLI smarthome:update spotify_client_id {you_value})
+* Copy the Client Secret to spotify_client_secret in OpenHab (e.g. through the rest API)
 
 6. Authenticate your New App for your Spotify User
 
@@ -82,3 +82,16 @@ Done in 0.761183977127 seconds
 ```
 
 8. You can now hook up OpenHab rules or HabPanel with the data in the spotify items.
+
+<h1>Use</h1>
+
+* spotify.py
+* parameters:
+  * none = refresh data
+  * play = resume playing
+  * play uri = play suported uris (album, artist or playlist)
+  * pause = pause
+  * next = next track
+  * previous = previous track
+  * volume_up = 10% up
+  * volume_down = 10% down

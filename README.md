@@ -24,6 +24,7 @@ A simple Python script to integrate Spotify's Web Connect API (https://developer
 * myopenhab.py into openhab-conf/scripts
 * spotify.py into openhab-conf/scripts
 * spotify.rules into openhab-conf/rules
+* spotify.items into openhab-conf/items
 
 3. Verify you can reach spotify-auth.html
 
@@ -40,7 +41,7 @@ A simple Python script to integrate Spotify's Web Connect API (https://developer
 
 5. Give the client id and secret to OpenHab
 
-* Save the Client ID to spotify_client_id in OpenHab (e.g. through openhab CLI smarthome:update spotify_client_id {you_value})
+* Save the Client ID to spotify_client_id in OpenHab (e.g. through openhab CLI smarthome:update spotify_client_id {your_id})
 * Copy the Client Secret to spotify_client_secret in OpenHab (e.g. through the rest API)
 
 6. Authenticate your New App for your Spotify User

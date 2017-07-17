@@ -6,50 +6,10 @@ when
 			logInfo("Spotify", resp)
 end
 
-rule "Spotify volume up"
+rule "Spotify Action"
 when
-		Item spotify_volume_up received update
+		Item spotify_action received update
 	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py volume_up", 5000)
-			logInfo("Spotify", resp)
-end
-
-rule "Spotify volume down"
-when
-		Item spotify_volume_down received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py volume_down", 5000)
-			logInfo("Spotify", resp)
-end
-
-rule "Spotify play"
-when
-		Item spotify_play received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py play", 5000)
-			logInfo("Spotify", resp)
-end
-
-rule "Spotify pause"
-when
-		Item spotify_pause received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py pause", 5000)
-			logInfo("Spotify", resp)
-end
-
-rule "Spotify previous"
-when
-		Item spotify_previous received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py previous", 5000)
-			logInfo("Spotify", resp)
-end
-
-rule "Spotify next"
-when
-		Item spotify_next received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py next", 5000)
+			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py " + spotify_action.state.toString, 5000)
 			logInfo("Spotify", resp)
 end

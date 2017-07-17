@@ -128,15 +128,21 @@ class spotify(object):
         
         if (time.time() > self.token_expiry):
             self.refreshCredentials()
-        headers = {"Authorization": "Bearer " + self.access_token}
+        headers = {"Authorization": "Bearer " + self.access_token, "Content-Type": "application/json" }
         if mode == "POST":
             r = requests.post(API_ROOT_URL + path,  headers=headers, data=payload)
+            if(r.status_code != 202):
+                print r.content
             return r.status_code
         elif mode == "PUT":
             r = requests.put(API_ROOT_URL + path,  headers=headers, data=payload)
+            if(r.status_code != 202):
+                print r.content
             return r.status_code
         else:
             r = requests.get(API_ROOT_URL + path,  headers=headers)
+            if(r.status_code != 202):
+                print r.content
             return r.json()
 
     def update(self):
@@ -224,15 +230,22 @@ class spotify(object):
 
         return resp    
 
-    def play(self):
+    def play(self, context_uri = None):
         """
         Resume player
         """
         print "-- Calling Service: Play"
+
+        if (context_uri is None):
+            payload = {}
+        else:
+            payload = json.dumps({ 'context_uri': context_uri })
+        print payload
+
         try:
-            resp = self.call("play","PUT")
-            self.oh.sendCommand('spotify_current_playing',"ON")
+            resp = self.call("play","PUT", payload = payload)
             if (self.debug): print resp
+            self.update()  
         except:
             print " -> Play Failure: ", sys.exc_info()[0]
             resp = ""
@@ -247,7 +260,7 @@ class spotify(object):
         try:
             resp = self.call("previous","POST")
             if (self.debug): print resp
-            self.refresh()  
+            self.update()  
         except:
             print " -> Previous Failure: ", sys.exc_info()[0]
             resp = ""
@@ -262,7 +275,7 @@ class spotify(object):
         try:
             resp = self.call("next","POST")
             if (self.debug): print resp
-            self.refresh()
+            self.update()
         except:
             print " -> Next Failure: ", sys.exc_info()[0]
             resp = ""
@@ -289,7 +302,13 @@ def main():
         if(args[1] == "volume_down"):
             c.volumeDown()
         if(args[1] == "play"):
-            c.play()
+            if(len(args)>2):
+                a = ""
+                for x in range(2, len(args)):
+                    a = a + args[x] + " "
+                c.play(a.strip())
+            else:
+                c.play()
         if(args[1] == "pause"):
             c.pause()
         if(args[1] == "previous"):

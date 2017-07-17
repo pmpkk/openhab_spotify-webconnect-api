@@ -89,7 +89,7 @@ Done in 0.761183977127 seconds
 * parameters:
   * none = refresh data
   * play = resume playing
-  * play uri = play suported uris (album, artist or playlist)
+  * play uri = play suported uris (album, artist or playlist), e.g. spotify:user:spotify:playlist:37i9dQZF1DX5OepaGriAIm
   * pause = pause
   * next = next track
   * previous = previous track

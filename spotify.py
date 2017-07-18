@@ -75,7 +75,7 @@ class spotify(object):
                 self.token_issued = time.strftime("%Y-%m-%dT%H:%M:%S")
                 self.saveCredentials()
             else:
-                print " -> Error refreshing token:" + str(resp)
+                print " -> Error getting token:" + str(resp)
 
         except:
             print " -> Error getting token:" + str(sys.exc_info()[1])

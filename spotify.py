@@ -74,6 +74,8 @@ class spotify(object):
                 self.token_expiry = time.time() + float(expires_in)
                 self.token_issued = time.strftime("%Y-%m-%dT%H:%M:%S")
                 self.saveCredentials()
+            else:
+                print " -> Error refreshing token:" + str(resp)
 
         except:
             print " -> Error getting token:" + str(sys.exc_info()[1])
@@ -107,6 +109,8 @@ class spotify(object):
                 self.token_expiry = time.time() + float(expires_in)
                 self.token_issued = time.strftime("%Y-%m-%dT%H:%M:%S")
                 self.saveCredentials()
+            else:
+                print " -> Error refreshing token:" + str(resp)
 
         except:
             print " -> Error refreshing token:" + str(sys.exc_info()[1])

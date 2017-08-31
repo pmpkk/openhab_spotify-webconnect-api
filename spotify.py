@@ -16,6 +16,7 @@ from myopenhab import getJSONValue
 ACCOUNT_URL = 'https://accounts.spotify.com/api/token'
 API_ROOT_URL = 'https://api.spotify.com/v1/me/player/'
 REDIRECT_URI = 'http://openhabianpi.local:8080/static/spotify-auth.html'
+VOL_INCREMENT = 10
 
 class spotify(object):
     """
@@ -209,7 +210,7 @@ class spotify(object):
         print "-- Calling Service: Volume Up"
         try:
             vol = int(self.oh.getState('spotify_current_volume'))
-            vol = int(round(vol/10)*10 + 10)
+            vol = int(round(vol/10)*10 + VOL_INCREMENT)
             if(vol>100): 
                 vol = 100
             print " -> Volume To:" + str(vol)
@@ -229,7 +230,7 @@ class spotify(object):
         print "-- Calling Service: Volume Down"
         try:
             vol = int(self.oh.getState('spotify_current_volume'))
-            vol = int(round(vol/10)*10 - 10)
+            vol = int(round(vol/10)*10 - VOL_INCREMENT)
             if(vol<0): 
                 vol = 0
             print "Volume To:" + str(vol)
@@ -268,7 +269,7 @@ class spotify(object):
             command = "play"
         else:
             command = "play?device_id=" + deviceID
-        
+
         if (context_uri is None):
             payload = {}
         else:

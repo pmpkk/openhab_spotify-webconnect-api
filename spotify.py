@@ -167,6 +167,7 @@ class spotify(object):
                 self.oh.sendCommand('spotify_current_playing', mapValues(getJSONValue(resp, ['is_playing']), { 'True': 'ON', 'False': 'OFF' }))
                 self.oh.sendCommand('spotify_current_device', getJSONValue(resp, ['device', 'name']))
                 self.oh.sendCommand('spotify_current_volume', getJSONValue(resp, ['device', 'volume_percent']))
+                self.oh.sendCommand('spotify_current_context_uri', getJSONValue(resp, ['context', 'uri']))
                 self.oh.sendCommand('spotify_current_device_id', getJSONValue(resp, ['device', 'id']))
 
                 duration = getJSONValue(resp, ['item', 'duration_ms'])

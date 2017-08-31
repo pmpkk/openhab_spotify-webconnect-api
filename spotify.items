@@ -21,6 +21,7 @@ String spotify_current_duration
 String spotify_current_progress
 Number spotify_current_progress_percent
 Switch spotify_current_playing
+String spotify_current_context_uri
 String spotify_current_device
 String spotify_current_device_id
 Number spotify_current_volume

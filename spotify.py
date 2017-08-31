@@ -204,6 +204,27 @@ class spotify(object):
 
         return resp
 
+    def transferPlayback(self):
+        """
+        Transfer Playback from one device to another
+        """
+        print "-- Calling Service: Transfer Playback"
+
+        deviceID = self.oh.getState('spotify_current_device_id')
+
+        payload = json.dumps({ 'device_ids': [ deviceID ] })
+        print payload
+
+        try:
+            resp = self.call("","PUT", payload = payload)
+            if (self.debug): print resp
+            self.update()  
+        except:
+            print " -> Transfer Playback Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return resp    
+
     def volumeUp(self):
         """
         Volume up by 10%
@@ -275,7 +296,6 @@ class spotify(object):
             payload = {}
         else:
             payload = json.dumps({ 'context_uri': context_uri })
-        print payload
 
         try:
             resp = self.call(command,"PUT", payload = payload)
@@ -332,13 +352,10 @@ def main():
         c.update()
     else:
 
-        if(args[1] == "devices"):
+        if(args[1] == "get_devices"):
             c.getDevices()
-        if(args[1] == "set_device"):
-            if(len(args)>2):
-                c.setDevice(args[2])
-            else:
-                print "Cannot set device. No device id specified."
+        if(args[1] == "transfer_playback"):
+            c.transferPlayback()
         if(args[1] == "volume_up"):
             c.volumeUp()
         if(args[1] == "volume_down"):

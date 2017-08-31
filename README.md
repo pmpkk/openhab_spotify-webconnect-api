@@ -7,6 +7,7 @@ A simple Python script to integrate Spotify's Web Connect API (https://developer
 * OpenHab REST installed
 * Spotify User Account
 * Spotify Developer Account
+* The script uses OpenHab items to store parameters and credentials. Make sure you have persistance turned on, otherwise all your settingd are lost upon reboot/restart
 * Know your OpenHab root URL/IP and port. In this doc, I assume http://openhabianpi.local:8080/
 
 <h1>Instructions</h1>

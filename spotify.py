@@ -27,7 +27,7 @@ class spotify(object):
     """
     def __init__(self):
 
-        self.debug = False 
+        self.debug = True 
         self.oh = openhab()
 
         self.client_id = self.oh.getState('spotify_client_id')
@@ -74,8 +74,6 @@ class spotify(object):
                 self.token_expiry = time.time() + float(expires_in)
                 self.token_issued = time.strftime("%Y-%m-%dT%H:%M:%S")
                 self.saveCredentials()
-            else:
-                print " -> Error getting token:" + str(resp)
 
         except:
             print " -> Error getting token:" + str(sys.exc_info()[1])
@@ -109,8 +107,6 @@ class spotify(object):
                 self.token_expiry = time.time() + float(expires_in)
                 self.token_issued = time.strftime("%Y-%m-%dT%H:%M:%S")
                 self.saveCredentials()
-            else:
-                print " -> Error refreshing token:" + str(resp)
 
         except:
             print " -> Error refreshing token:" + str(sys.exc_info()[1])
@@ -135,17 +131,20 @@ class spotify(object):
         headers = {"Authorization": "Bearer " + self.access_token, "Content-Type": "application/json" }
         if mode == "POST":
             r = requests.post(API_ROOT_URL + path,  headers=headers, data=payload)
-            if(r.status_code != 202):
+            if(r.status_code < 200 and r.status_code > 299):
+                print "Response Code = " + str(r.status_code)
                 print r.content
             return r.status_code
         elif mode == "PUT":
             r = requests.put(API_ROOT_URL + path,  headers=headers, data=payload)
-            if(r.status_code != 202):
+            if(r.status_code < 200 and r.status_code > 299):
+                print "Response Code = " + str(r.status_code)
                 print r.content
             return r.status_code
         else:
             r = requests.get(API_ROOT_URL + path,  headers=headers)
-            if(r.status_code != 202):
+            if(r.status_code < 200 and r.status_code > 299):
+                print "Response Code = " + str(r.status_code)
                 print r.content
             return r.json()
 
@@ -164,17 +163,41 @@ class spotify(object):
                 self.oh.sendCommand('spotify_current_cover', getJSONValue(resp, ['item', 'album', 'images', 1, 'url']))
                 self.oh.sendCommand('spotify_current_duration', getJSONValue(resp, ['item', 'duration_ms']))
                 self.oh.sendCommand('spotify_current_progress', getJSONValue(resp, ['progress_ms']))
-                self.oh.sendCommand('spotify_current_progress', getJSONValue(resp, ['progress_ms']))
                 self.oh.sendCommand('spotify_current_playing', mapValues(getJSONValue(resp, ['is_playing']), { 'True': 'ON', 'False': 'OFF' }))
                 self.oh.sendCommand('spotify_current_device', getJSONValue(resp, ['device', 'name']))
                 self.oh.sendCommand('spotify_current_volume', getJSONValue(resp, ['device', 'volume_percent']))
                 self.oh.sendCommand('spotify_current_device_id', getJSONValue(resp, ['device', 'id']))
+
+                duration = getJSONValue(resp, ['item', 'duration_ms'])
+                progress = getJSONValue(resp, ['progress_ms'])
+                if(duration is not None and progress is not None):
+                    progress_percent = round(float(progress) / float(duration) * 100,2)
+                else:
+                    progress_percent = 0
+
+                self.oh.sendCommand('spotify_current_progress_percent', progress_percent)
 
                 print " -> Success"
             else:
                 print " -> Item node missing from response :("
         except:
             print " -> Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return resp
+
+    def getDevices(self):
+        """
+        Get List of Devices
+        """
+        print "-- Calling Service: Get Devices"
+        try:
+            resp = self.call("devices")
+            resp = json.dumps(resp["devices"])
+            self.oh.sendCommand('spotify_device_list',resp)
+            if (self.debug): print resp
+        except:
+            print " -> Device List Failure: ", sys.exc_info()[0]
             resp = ""
 
         return resp
@@ -240,6 +263,12 @@ class spotify(object):
         """
         print "-- Calling Service: Play"
 
+        deviceID = self.oh.getState('spotify_current_device_id')
+        if (deviceID == ''):
+            command = "play"
+        else:
+            command = "play?device_id=" + deviceID
+        
         if (context_uri is None):
             payload = {}
         else:
@@ -247,7 +276,7 @@ class spotify(object):
         print payload
 
         try:
-            resp = self.call("play","PUT", payload = payload)
+            resp = self.call(command,"PUT", payload = payload)
             if (self.debug): print resp
             self.update()  
         except:
@@ -301,6 +330,13 @@ def main():
         c.update()
     else:
 
+        if(args[1] == "devices"):
+            c.getDevices()
+        if(args[1] == "set_device"):
+            if(len(args)>2):
+                c.setDevice(args[2])
+            else:
+                print "Cannot set device. No device id specified."
         if(args[1] == "volume_up"):
             c.volumeUp()
         if(args[1] == "volume_down"):

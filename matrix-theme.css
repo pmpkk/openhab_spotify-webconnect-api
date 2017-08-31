@@ -79,7 +79,7 @@ body {
 	background: #000;
 }
 .drawer ul.menu li {
-    font-weight: 100;
+    font-weight: 300;
 }
 .drawer ul.menu li.active:not(.head):after {
 	display: none;
@@ -118,6 +118,10 @@ body {
     /* For mobile: */
     .section {
     }
+    .section .hueSelect {
+      max-width: 100%;
+      padding-right: 15px;
+    }
 	.section .widget {
 		width: 100%;
 		float: left;
@@ -139,6 +143,10 @@ body {
     /* For tablet: */
     .section {
     }
+    .section .hueSelect {
+      width: 50%;
+      padding-right: 70px;
+    }    
 	.section .widget {
 		width: 50%;
 		float: left;
@@ -160,6 +168,11 @@ body {
     /* For desktop: */
     .section {
     }
+    .section .hueSelect {
+      width: 33%;
+      padding-right: 70px;
+    }
+
 	.section .widget {
 		width: 33%;
 		float: left;
@@ -205,6 +218,14 @@ body {
 	text-transform: uppercase;
 	padding-bottom: 20px;
 }
+.section .sub-title {
+    font-size: 20px;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    color: #26bf75;
+    clear: both;
+}
 .section .title .name {
 	font-size: 30px;
 	font-weight: 100;
@@ -234,7 +255,9 @@ body {
 	right: 0px;
 }
 .section .sectionIcon svg {
+    stroke: #565f58;
     fill: #565f58;
+    stroke-width: 1px;
 }
 .section .bigDash {
 	float:left;
@@ -288,6 +311,47 @@ body {
 	text-align: center;
     clear: left;	
 }
+.section .bigDash .trend {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    display: inline-block;
+    top: 40px;
+    left: -26px;
+} 
+
+.section .bigDash .trend svg {
+    stroke: #565f58;
+    stroke-width: 2px;
+}
+.section .bigDash .trend.up svg {
+    stroke: #26bf75;
+    animation: upy 0.2s ease-in-out infinite alternate;
+}
+.section .bigDash .trend.down svg {
+    stroke: #ff2c0a;
+    animation: downy 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes upy {
+    0% {
+        transform: translate(0px, 0px);
+    }
+    100% {
+        transform: translate(0px, 5px);
+    }
+}
+@keyframes downy {
+    0% {
+        transform: translate(0px, 0px);
+    }
+    100% {
+        transform: translate(0px, -5px);
+    }
+}
+
+
+
 .graph img {
 	border-bottom: 1px solid #565f58;
 }
@@ -298,23 +362,34 @@ body {
     color: #aaa;
     font-weight: 300;
 }
+
+.section .widget {
+  cursor: pointer;
+}
 .section .widget .icon {
 	width: 30px;
 	height: 30px;
 	margin-right: 10px;
 	float: left;
 }
+.section .icon svg, .section .control svg {
+  stroke-width: 2px;
+}
 .section .icon.off svg {
-	fill: #565f58;
+  stroke: #565f58;
+  fill: #565f58;
 }
 .section .icon.on svg {
+  stroke: #26bf75;
   fill: #26bf75;
 }
 .section .icon.warn svg {
+  stroke: #ff2c0a;
   fill: #ff2c0a;
   animation: blinker 1s linear infinite;
 }
 .section .icon.blink svg {
+  stroke: #00afb8;
   fill: #00afb8;
 	animation: blinker 1s linear infinite;
 }
@@ -322,9 +397,11 @@ body {
 	50% { opacity: 0; }
 }	
 .section .icon.wind svg {
+  stroke: #565f58;  
   fill: #565f58;  
 }
 .section .icon.on.wind svg {
+  stroke: #26bf75;  
   fill: #26bf75;  
 }
 .section .icon.wind {
@@ -342,11 +419,19 @@ body {
     }
 }
 
+.section .widget select {
+    background: rgba(0,0,0,0);
+    border: 0px;
+    outline: none;
+    text-align: right;
+    text-align-last: right;
+}
 
 .section .widget.disabled {
   opacity: 0.2;
 }
 .section .widget.disabled:active .icon svg {
+  stroke: #565f58;
   fill: #565f58;
 }
 .section .widget.disabled:active .name {
@@ -357,11 +442,13 @@ body {
 }
 
 .section .widget:active .icon svg {
+  stroke: #fff;
   fill: #fff;
 	-webkit-transition: 0.2s;
 }
 .section .widget:active .name {
   color:  #565f58;
+  fill:  #565f58;
 	-webkit-transition: 0.2s;
 }
 
@@ -411,7 +498,7 @@ body {
 .section .widget .sceneGroup .scene {
     border: 1px solid #565f58;
     border-radius: 5px;
-    padding: 6px 20px 6px 20px;
+    padding: 6px 6px 6px 6px;
     text-align: center;
     margin-bottom: 8px;
     width: 133px;
@@ -421,9 +508,15 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.section .widget .sceneGroup .scene.on {
+  background-color: #393d3a;
+  border: 1px solid #393d3a;
+  color: #26bf75;
+}
 
 .section .widget .valueGroup {
 	padding-right: 20px;
+  min-height: 35px;  
 }
 .section .widget .valueGroup .value {
 	text-align: right;
@@ -435,7 +528,10 @@ body {
     color: #ff2c0a;
     font-weight: 600;
 }
-.section .widget .valueGroup .value:nth-child(2) {
+.section .widget .valueGroup .value.active {
+    color: #00afb8;
+}
+.section .widget .valueGroup .value:nth-child(n+2) {
 	color: #1d4d3b;	
 }
 .section .controls {
@@ -458,6 +554,10 @@ body {
   height: 40px; 
   float: right;
   border-radius: 100%;
+  text-align: center;
+  color: #26bf75;
+  line-height: 41px;
+  font-weight: bold;  
 }
 .section .control.on {
   background-color: #4a6b52;
@@ -467,6 +567,7 @@ body {
 	-webkit-transition: 0.2s;
 }
 .section .control svg {
+  stroke: #26bf75;
   fill: #26bf75;
 	padding: 8px;
 }
@@ -475,21 +576,32 @@ body {
 .section .bigDash .value {
 	font-weight: 100;
 }
+.section .bigDash .top .icon svg{
+  stroke-width: 1px;
+}
 
 .section .bigDash .main {
 	font-size: 95px;
-	letter-spacing: -4px;
+	letter-spacing: 0px;
 	line-height: 110px;
 	float:left;
 	color: white;
 	
 }
+.section .bigDash .decimals {
+  font-size: 60px;
+  letter-spacing: 0px;
+  line-height: 0px;
+  float: left;
+  color: #575f59;
+  padding-top: 65px;
+}
 .section .bigDash .sub {
 	font-size: 45px;
-	color: #393d3a;
+	color: #575f59;
 	display:inline;
 	text-align: left;
-	margin-left: -15px;
+	margin-left: -40px;
 }
 
 
@@ -639,7 +751,7 @@ body {
     float: right;
 }
 .section .controls .music .playbackTime {
-  width: 20%;
+  width: 22%;
     display: inline-block;
     text-align: center;
     /* border: 1px solid red; */
@@ -652,7 +764,7 @@ body {
     height: 100%;
 }
 .section .controls .music .playbackBar {
-    width: 60%;
+    width: 52%;
     display: inline-block;
     background: #565f58;
     height: 2px;
@@ -664,4 +776,41 @@ body {
   margin-left: auto;
     width: 150px;
     padding: 0px 10px 50px 0px;
+}
+
+.section .widget .name .hue {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    margin-right: 7px;
+    border-radius: 100%;
+}
+
+
+.section .hueSelect {
+    position: absolute;
+    height: 0px;
+}
+.section .hueSelect a {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin: 15px 0px 0px 20px;
+    border-radius: 100%;
+    border: 1px solid rgba(255,255,255,0);
+}
+.section .hueSelect a:hover, .section .hueSelect a:active {
+  border: 1px solid white;
+  -webkit-transition: 0.2s;
+ 
+}
+.section .hueSelectOptions {
+    position: relative;
+    top: 7px;
+    padding: 5px 25px 15px 10px;
+    background: #2a332e;
+    border-radius: 0px 0px 15px 15px;
+    left: 0;
+    left: -1px;
+    border-top: 1px solid #5f7167;
 }

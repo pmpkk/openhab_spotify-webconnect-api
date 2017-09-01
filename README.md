@@ -97,3 +97,5 @@ Done in 0.761183977127 seconds
   * previous = previous track
   * volume_up = 10% up
   * volume_down = 10% down
+  * get_devices = get available devices and safe to openhab
+  * transfer_playback = transfer playback to device set in openhab

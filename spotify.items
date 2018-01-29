@@ -1,6 +1,5 @@
-
 /* Switch to Force Update */
-Switch spotify_forceupadte
+Switch spotify_forceupdate
 
 /* Strings for Primary Auth */
 String spotify_auth_code
@@ -25,6 +24,8 @@ String spotify_current_context_uri
 String spotify_current_device
 String spotify_current_device_id
 Number spotify_current_volume
+Switch spotify_current_shuffle
+String spotify_current_repeat
 
 /* Switches for Player actions */
 String spotify_action
@@ -34,3 +35,4 @@ DateTime spotify_lastConnectionDateTime
 /* Strings to store JSONs */
 
 String spotify_device_list
+String spotify_playlists

@@ -15,6 +15,7 @@ from myopenhab import getJSONValue
 #   API Gateway
 ACCOUNT_URL = 'https://accounts.spotify.com/api/token'
 API_ROOT_URL = 'https://api.spotify.com/v1/me/player/'
+API_LISTS_URL = 'https://api.spotify.com/v1/me/playlists?offset=0&limit=50'
 REDIRECT_URI = 'http://openhabianpi.local:8080/static/spotify-auth.html'
 VOL_INCREMENT = 10
 
@@ -126,7 +127,6 @@ class spotify(object):
         """
         Call the API at the given path.
         """
-        
         if (time.time() > self.token_expiry):
             self.refreshCredentials()
         headers = {"Authorization": "Bearer " + self.access_token, "Content-Type": "application/json" }
@@ -142,6 +142,12 @@ class spotify(object):
                 print "Response Code = " + str(r.status_code)
                 print r.content
             return r.status_code
+        elif path == "playlists":
+            r = requests.get(API_LISTS_URL,  headers=headers)
+            if(r.status_code < 200 and r.status_code > 299):
+                print "Response Code = " + str(r.status_code)
+                print r.content
+            return r.json()
         else:
             r = requests.get(API_ROOT_URL + path,  headers=headers)
             if(r.status_code < 200 and r.status_code > 299):
@@ -155,8 +161,10 @@ class spotify(object):
         """
         print "-- Calling Service: Update"
         try:
+
             resp = self.call("")
             if (self.debug): print resp
+
             if ('item' in resp):
 
                 self.oh.sendCommand('spotify_current_track', getJSONValue(resp, ['item','name']))
@@ -169,6 +177,8 @@ class spotify(object):
                 self.oh.sendCommand('spotify_current_volume', getJSONValue(resp, ['device', 'volume_percent']))
                 self.oh.sendCommand('spotify_current_context_uri', getJSONValue(resp, ['context', 'uri']))
                 self.oh.sendCommand('spotify_current_device_id', getJSONValue(resp, ['device', 'id']))
+                self.oh.sendCommand('spotify_current_shuffle', mapValues(getJSONValue(resp, ['shuffle_state']), { 'True': 'ON', 'False': 'OFF' }))
+                self.oh.sendCommand('spotify_current_repeat', getJSONValue(resp, ['repeat_state']))
 
                 duration = getJSONValue(resp, ['item', 'duration_ms'])
                 progress = getJSONValue(resp, ['progress_ms'])
@@ -203,6 +213,26 @@ class spotify(object):
             resp = ""
 
         return resp
+
+    def getPlaylists(self):
+        """
+        Get List of Playlists
+        """
+        print "-- Calling Service: Get Playlists"
+        try:
+            resp = self.call("playlists")
+            plists = []
+            for iter, list in enumerate(resp['items']):
+                plists.append({})
+                plists[iter]['name'] = list['name']
+                plists[iter]['uri'] = list['uri']
+            self.oh.sendCommand('spotify_playlists',plists)
+            if (self.debug): print resp
+        except:
+            print " -> Playlist Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return plists
 
     def transferPlayback(self):
         """
@@ -264,6 +294,65 @@ class spotify(object):
             resp = ""
 
         return resp
+
+    def volumeSet(self, vol):
+        """
+        Set specific volume
+        """
+        print "-- Calling Service: Set Volume"
+        try:
+            vol = int(vol)
+            if(vol<0):
+                vol = 0
+            elif(vol>100):
+                vol = 100
+
+            print "Volume To:" + str(vol)
+            resp = self.call("volume?volume_percent=" + str(vol),"PUT" )
+            self.oh.sendCommand('spotify_current_volume',vol)
+            if (self.debug): print resp
+        except:
+            print " -> VolumeSet Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return resp
+
+    def shuffleSet(self, state):
+        """
+        Set Shuffle Modus
+        """
+        print "-- Calling Service: Set Shuffle"
+        try:
+            if state == "ON":
+                bstate = 'true'
+            elif state == 'OFF':
+                bstate = 'false'
+
+            print "Set Shuffle to:" + (state)
+            resp = self.call("shuffle?state=" + bstate, "PUT")
+            self.oh.sendCommand('spotify_current_shuffle',state)
+            if (self.debug): print resp
+        except:
+            print " -> ShuffleSet Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return resp
+
+    def repeatSet(self, state):
+        """
+        Set Repeat mode
+        """
+        print "-- Calling Service: Set Repeat"
+        try:
+            print "Set Repeat To: " + state
+            resp = self.call("repeat?state=" + state, "PUT")
+            self.oh.sendCommand('spotify_current_repeat', state)
+            if (self.debug): print resp
+        except:
+            print " -> RepeatSet Failure: ", sys.exc_info()[0]
+            resp = ""
+
+        return
 
     def pause(self):
         """
@@ -338,7 +427,7 @@ class spotify(object):
         return resp
 
     def updateConnectionDateTime(self):
-        self.oh.sendCommand('spotify_lastConnectionDateTime',time.strftime("%Y-%m-%dT%H:%M:%S+0000",time.gmtime(time.time())))     
+        self.oh.sendCommand('spotify_lastConnectionDateTime',time.strftime("%Y-%m-%dT%H:%M:%S",time.gmtime(time.time())))     
 
 def main():
 
@@ -354,6 +443,8 @@ def main():
 
         if(args[1] == "get_devices"):
             c.getDevices()
+        if(args[1] == "get_playlists"):
+            c.getPlaylists()
         if(args[1] == "transfer_playback"):
             c.transferPlayback()
         if(args[1] == "volume_up"):
@@ -368,6 +459,15 @@ def main():
                 c.play(a.strip())
             else:
                 c.play()
+        if(args[1] == "volume_set"):
+            if(len(args) == 3):
+                c.volumeSet(args[2].strip())
+        if(args[1] == "shuffle_set"):
+            if(len(args) == 3):
+                c.shuffleSet(args[2].strip())
+        if(args[1] == "repeat_set"):
+            if(len(args) == 3):
+                c.repeatSet(args[2].strip())
         if(args[1] == "pause"):
             c.pause()
         if(args[1] == "previous"):

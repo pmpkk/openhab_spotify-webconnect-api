@@ -1,15 +1,69 @@
-rule "Spotify run script"
+//Change play/pause
+rule "Change Spotify Play/Pause"
 when
-		Item spotify_forceupadte received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py", 5000)
-			logInfo("Spotify", resp)
+    Item spotify_current_playing received command
+then
+    if (spotify_current_playing.state == ON) {
+        spotify_action.sendCommand("play")
+    } else if (spotify_current_playing.state == OFF) {
+        spotify_action.sendCommand("pause")
+    }
 end
 
+//Change device
+rule "Change Spotify Device"
+when
+    Item spotify_current_device_id received command
+then
+    spotify_action.sendCommand("transfer_playback")
+end
+
+//Change volume
+rule "Set Spotify volume"
+when
+    Item spotify_current_volume received command
+then
+    spotify_action.sendCommand("volume_set " + spotify_current_volume.state.toString)
+end
+
+//Play Playlist
+rule "Play Spotify Playlist"
+when
+    Item spotify_current_context_uri received command
+then
+    spotify_action.sendCommand("play " +  spotify_current_context_uri.state.toString)
+end
+
+//Set Shuffle
+rule "Change Spotify Shuffle"
+when
+    Item spotify_current_shuffle received command
+then
+    spotify_action.sendCommand("shuffle_set " + spotify_current_shuffle.state.toString)
+end
+
+//Set Repeat
+rule "Change Spotify Repeat"
+when
+    Item spotify_current_repeat received command
+then
+    spotify_action.sendCommand("repeat_set " + spotify_current_repeat.state.toString)
+end
+
+// Update
+rule "Spotify run script"
+when
+	Item spotify_forceupdate changed to ON
+then		
+	val resp = executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py", 5000)
+	logInfo("Spotify", resp)
+end
+
+//Execute Action
 rule "Spotify Action"
 when
-		Item spotify_action received update
-	then		
-			val resp =  executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py " + spotify_action.state.toString, 5000)
-			logInfo("Spotify", resp)
+	Item spotify_action received update
+then		
+	val resp = executeCommandLine("/usr/bin/python /etc/openhab2/scripts/spotify.py " + spotify_action.state.toString, 5000)
+	logInfo("Spotify", resp)
 end

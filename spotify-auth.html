@@ -25,7 +25,7 @@
 			if (data.length>10) {
 	  			$( "#client_id" ).html( data );
 
-	  			url = 'https://accounts.spotify.com/authorize?response_type=code&redirect_uri=' + encodeURI(document.location.href) + '&client_id=' + data + '&scope=user-read-playback-state user-modify-playback-state';
+	  			url = 'https://accounts.spotify.com/authorize?response_type=code&redirect_uri=' + encodeURI(document.location.href) + '&client_id=' + data + '&scope=user-read-playback-state user-modify-playback-state playlist-read-private';
 
 	  			$( "#link" ).attr('href',url);				
 			} else {
